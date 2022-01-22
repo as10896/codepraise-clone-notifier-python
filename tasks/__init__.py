@@ -1,5 +1,5 @@
 from invoke import Collection
 
-from . import console, worker, quality
+from . import console, docker, quality, worker
 
-ns = Collection(console, worker, quality)
+ns = Collection(console, worker, docker, quality)

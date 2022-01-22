@@ -23,7 +23,39 @@ pipenv install --dev  # install required dependencies with Pipfile
     * Notice that the name of a FIFO queue must end with the `.fifo` suffix.
 4. Create `REPORT_QUEUE` under `config/secrets/<env>/` with the created queue's name (or just setting the environment variable `REPORT_QUEUE`).
 
-## Usage
+## Run with Docker
+1. Build the Docker image at the base of the project directory.
+    ```bash
+    inv docker.build
+    ```
+2. Use either of the following ways to run container with the AWS credentials.
+    * Put all the AWS credentials under `config/secrets/prod/` directory. Then use the following command to run container at the base of the project directory.
+        ```bash
+        inv docker.run
+        ```
+    * Pass all the AWS credentials directly with the following command.
+        ```bash
+        inv docker.run \
+            -e AWS_ACCESS_KEY_ID=<aws credentials> \
+            -e AWS_SECRET_ACCESS_KEY=<aws credentials> \
+            -e AWS_REGION=<aws credentials> \
+            -e REPORT_QUEUE=<aws sqs queue>
+        ```
+        or
+        ```bash
+        export AWS_ACCESS_KEY_ID=<aws credentials>
+        export AWS_SECRET_ACCESS_KEY=<aws credentials>
+        export AWS_REGION=<aws credentials>
+        export REPORT_QUEUE=<aws sqs queue>
+        inv docker.run \
+            -e AWS_ACCESS_KEY_ID \
+            -e AWS_SECRET_ACCESS_KEY \
+            -e AWS_REGION \
+            -e REPORT_QUEUE
+        ```
+
+
+## CLI usage
 Here we use [invoke](https://docs.pyinvoke.org/) as our task management tool
 
 ```bash
@@ -37,4 +69,8 @@ inv quality.all  # run all quality tasks (style + metric)
 inv quality.reformat  # reformat your code using isort and the black coding style
 inv quality.typecheck  # check type with mypy
 inv quality  # same as `inv quality.all`
+inv docker.build  # build Docker image for production usage
+inv docker.run -e [environs] -c [cmd]  # run the local Docker container as a worker
+inv docker.rm  # remove exited containers
+inv docker.ps  # list all containers, running and exited
 ```
