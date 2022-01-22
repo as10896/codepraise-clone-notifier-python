@@ -23,19 +23,24 @@ pipenv install --dev  # install required dependencies with Pipfile
     * Notice that the name of a FIFO queue must end with the `.fifo` suffix.
 4. Create `REPORT_QUEUE` under `config/secrets/<env>/` with the created queue's name (or just setting the environment variable `REPORT_QUEUE`).
 
+### Set up Slack Webhook URL
+1. Follow this [tutorial](https://api.slack.com/messaging/webhooks) to create a Slack App and get your Webhook URL.
+2. Create `SLACK_WEBHOOK_URL` under `config/secrets/<env>/` with the webhook url (or just setting the environment variable `SLACK_WEBHOOK_URL`).
+
 ## Run with Docker
-Use either of the following ways to build image and run container with the AWS credentials.
-* Put all the AWS credentials under `config/secrets/prod/` directory. Then use the following command to build image and run container at the base of the project directory.
+Use either of the following ways to build image and run container with all the credentials.
+* Put all credentials under `config/secrets/prod/` directory. Then use the following command to build image and run container at the base of the project directory.
     ```bash
     docker compose run --rm worker
     ```
-* Pass all the AWS credentials directly with the following command.
+* Pass all credentials directly with the following command.
     ```bash
     docker compose run --rm \
         -e AWS_ACCESS_KEY_ID=<aws credentials> \
         -e AWS_SECRET_ACCESS_KEY=<aws credentials> \
         -e AWS_REGION=<aws credentials> \
         -e REPORT_QUEUE=<aws sqs queue> \
+        -e SLACK_WEBHOOK_URL=<slack webhook url> \
         worker
     ```
     or
@@ -44,6 +49,7 @@ Use either of the following ways to build image and run container with the AWS c
     export AWS_SECRET_ACCESS_KEY=<aws credentials>
     export AWS_REGION=<aws credentials>
     export REPORT_QUEUE=<aws sqs queue>
+    export SLACK_WEBHOOK_URL=<slack webhook url>
     docker compose run --rm worker
     ```
 

@@ -1,6 +1,8 @@
 from functools import reduce
 from typing import Dict
 
+import requests
+
 from config import get_settings
 from infrastructure import messaging
 
@@ -11,7 +13,12 @@ config = get_settings()
 queue = messaging.Queue(config.REPORT_QUEUE, config)
 
 
-def main():
+def send_slack_message(message: str) -> None:
+    r = requests.post(config.SLACK_WEBHOOK_URL, json={"text": message})
+    r.raise_for_status()
+
+
+def main() -> None:
     cloned_repos: Dict[int, RepoRepresenter] = {}
 
     print("Checking reported clones", end="", flush=True)
@@ -28,11 +35,12 @@ def main():
             lambda size, repo: size + repo.size, cloned_repos.values(), 0
         )
 
-        # TODO: Email administrator instead of printing to STDOUT
-        print(f"\nNumber of unique repos cloned: {len(cloned_repos)}")
-        print(f"Total disk space: {total_size}")
+        send_slack_message(
+            f"Number of unique repos cloned: {len(cloned_repos)}\n"
+            f"Total disk space: {total_size}"
+        )
     else:
-        print("\nNo cloning reported")
+        send_slack_message("\nNo cloning reported")
 
 
 if __name__ == "__main__":

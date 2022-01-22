@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     AWS_SECRET_ACCESS_KEY: str
     AWS_REGION: str
     REPORT_QUEUE: str
+    SLACK_WEBHOOK_URL: str
 
 
 class Development(Settings):

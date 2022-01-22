@@ -16,6 +16,7 @@ isort = "*"
 black = "*"
 regex = "==2021.09.30"  # to fix the library validation error of `black`
 mypy = "*"
+requests = "*"
 
 [requires]
 python_version = "3.9"
