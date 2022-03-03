@@ -6,7 +6,7 @@ import requests
 from config import get_settings
 from ..infrastructure import messaging
 
-from .representers import CloneRequestRepresenter, RepoRepresenter
+from ..representers import CloneRequestRepresenter, RepoRepresenter
 
 config = get_settings()
 
