@@ -4,7 +4,7 @@ from typing import Dict
 import requests
 
 from config import get_settings
-from infrastructure import messaging
+from ..infrastructure import messaging
 
 from .representers import CloneRequestRepresenter, RepoRepresenter
 

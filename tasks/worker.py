@@ -11,4 +11,4 @@ def worker(c, env="development"):
     """
     Execute the scheduled worker
     """
-    c.run(f"ENV={env} python -m application.clone_notifier")
+    c.run(f"ENV={env} python -m worker.application.clone_notifier")
