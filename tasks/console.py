@@ -4,15 +4,15 @@ from invoke import task
 @task(
     default=True,
     help={
-        "mode": "Environment of the console to run. ['development'|'production'] [default: 'development']"
+        "env": "Environment of the console to run. ['development'|'production'] [default: 'development']"
     },
 )
-def console(c, mode="test"):
+def console(c, env="development"):
     """
     Run application console (ipython)
     """
     c.run(
-        f"ENV={mode} ipython \
+        f"ENV={env} ipython \
             --InteractiveShellApp.exec_lines='from config import *' \
             --InteractiveShellApp.exec_lines='from worker.application.representers import *' \
             --InteractiveShellApp.exec_lines='from worker.infrastructure.messaging import *'",

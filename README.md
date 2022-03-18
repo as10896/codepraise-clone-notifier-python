@@ -59,7 +59,7 @@ Here we use [invoke](https://docs.pyinvoke.org/) as our task management tool
 ```bash
 inv -l  # show all tasks
 inv [task] -h  # show task help message
-inv console  # run application console (ipython)
+inv console -e [env]  # run application console (ipython)
 inv worker -e [env]  # execute the scheduled worker
 inv quality.style  # examine coding style with flake8
 inv quality.metric  # measure code metric with radon
