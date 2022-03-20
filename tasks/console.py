@@ -14,7 +14,7 @@ def console(c, env="development"):
     c.run(
         f"ENV={env} ipython \
             --InteractiveShellApp.exec_lines='from config import *' \
-            --InteractiveShellApp.exec_lines='from worker.application.representers import *' \
+            --InteractiveShellApp.exec_lines='from worker.representers import *' \
             --InteractiveShellApp.exec_lines='from worker.infrastructure.messaging import *'",
         pty=True,
     )
