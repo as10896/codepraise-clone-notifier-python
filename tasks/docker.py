@@ -53,6 +53,14 @@ def rm(c):
 
 
 @task
+def rmi(c):
+    """
+    Remove dangling images
+    """
+    c.run("docker rmi $(docker images -q -f dangling=true)", pty=True)
+
+
+@task
 def ps(c):
     """
     List all containers, running and exited
