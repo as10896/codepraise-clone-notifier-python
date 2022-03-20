@@ -1,12 +1,42 @@
+x-app: &default-app
+  build:
+    args:
+      - INSTALL_DEV=${INSTALL_DEV:-false}
+  image: codepraise-clone-notifier-python
+  volumes:
+    - ./config/secrets:/worker/config/secrets
+  environment:
+    - AWS_ACCESS_KEY_ID
+    - AWS_SECRET_ACCESS_KEY
+    - AWS_REGION
+    - REPORT_QUEUE
+    - SLACK_WEBHOOK_URL
+
 services:
+  # `$ docker compose run --rm worker`
   worker:
-    build: .
-    image: codepraise-clone-notifier-python
-    volumes:
-      - ./config:/worker/config
-    environment:
-      - ENV=production
-      - AWS_ACCESS_KEY_ID
-      - AWS_SECRET_ACCESS_KEY
-      - AWS_REGION
-      - REPORT_QUEUE
+    <<: *default-app
+    command: inv worker -e ${ENV:-development}
+  
+  # `$ docker compose run --rm console`
+  console:
+    <<: *default-app
+    build:
+      args:
+        - INSTALL_DEV=true
+    image: codepraise-clone-notifier-python:debug
+    profiles:
+      - debug
+    command: inv console -e ${ENV:-development}
+
+  # `$ docker compose run --rm bash`
+  bash:
+    <<: *default-app
+    build:
+      args:
+        - INSTALL_DEV=true
+    image: codepraise-clone-notifier-python:debug
+    tty: true
+    profiles:
+      - debug
+    command: bash
