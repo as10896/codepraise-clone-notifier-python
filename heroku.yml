@@ -1,0 +1,19 @@
+setup:
+  addons:
+  - plan: scheduler
+    as: SCHEDULER
+build:
+  docker:
+    # When deploying with Docker, you must use `web` image instead of `worker` to use Heroku Scheduler
+    # even if it's only used to execute one-off tasks.
+    # Ref: https://devcenter.heroku.com/articles/scheduler#heroku-scheduler-and-container-registry
+    web: Dockerfile
+run:
+  # Here we don't use `web: inv worker -e production` to set up the command to be executed by Heroku Scheduler.
+  # The scheduled job `inv worker -e production` is a one-off task and will exit the process with status 0 
+  # right after execution. This will result in an infinite loop of application restart and crash.
+  # Instead, we use a process running forever to avoid application repeating Starting/Crashed over and over.
+  # Notice that you have to bind this process with Heroku-assigned $PORT, otherwise it'll raise Boot timeout error.
+  # Finally, you need to manually set up the scheduled job `inv worker -e production` on the dashboard of Heroku Scheduler.
+  # You can use `heroku addons:open scheduler` to access the dashboard if you have Heroku CLI installed.
+  web: python -m http.server ${PORT}
