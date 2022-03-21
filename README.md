@@ -2,7 +2,7 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 
-Daily clone report notifier for [codepraise-api-python](https://github.com/as10896/codepraise-api-python), based on [Heroku Scheduler](https://devcenter.heroku.com/articles/scheduler).
+Daily clone report notifier for [codepraise-app-python](https://github.com/as10896/codepraise-app-python) and [codepraise-api-python](https://github.com/as10896/codepraise-api-python), based on [Heroku Scheduler](https://devcenter.heroku.com/articles/scheduler).
 
 ## Prerequisite
 ### Install Docker
