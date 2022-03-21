@@ -2,20 +2,31 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 
-Scheduled worker for  [codepraise-api-python](https://github.com/as10896/codepraise-api-python).
+Daily clone report notifier for [codepraise-api-python](https://github.com/as10896/codepraise-api-python), based on [Heroku Scheduler](https://devcenter.heroku.com/articles/scheduler).
 
 ## Prerequisite
-### Create virtual environment
-Here we use [Pipenv](https://pipenv.pypa.io/en/latest/) to create our virtual environment.
+### Install Docker
+Make sure you have the latest version of [Docker 🐳](https://www.docker.com/get-started) installed on your local machine.
 
-```bash
-pip install pipenv  # install pipenv
-pipenv --python 3.9  # create Python 3.9 virtualenv under current directory
-pipenv shell  # activate the virtualenv of the current directory
-pipenv install --dev  # install required dependencies with Pipfile
+### Secrets setup
+Placing secret values in files is a common pattern to provide sensitive configuration to an application. A secret file follows the same principal as a `.env` file except it only contains a single value and the file name is used as the key.
+
+A secret file will look like the following:
+
+`/var/run/database_password`:
+
+```
+super_secret_database_password
 ```
 
-### Set up Report Queue with Amazon SQS 
+Here we create secret files under the secret directories (`config/secrets/<env>/`) and place secret values into the files.
+
+You can also set up environment variables directly.\
+The variables you set in this way would take precedence over those loaded from a secret file.
+
+For more info, check the [pydantic official document](https://pydantic-docs.helpmanual.io/usage/settings/#secret-support).
+
+#### Set up Report Queue with Amazon SQS 
 1. Create an AWS account and an IAM user ([Ref](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-setting-up.html)).
 2. Create `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` under `config/secrets/<env>/` with the generated credentials (or just setting environment variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`).
 3. Select a region where FIFO Queues are available (e.g. `us-east-1`, see [here](https://aws.amazon.com/about-aws/whats-new/2019/02/amazon-sqs-fifo-qeues-now-available-in-15-aws-regions/) for more info), then creating `AWS_REGION` under `config/secrets/<env>/` with the region name (or just setting the environment variable `AWS_REGION`).
@@ -23,40 +34,54 @@ pipenv install --dev  # install required dependencies with Pipfile
     * Notice that the name of a FIFO queue must end with the `.fifo` suffix.
 4. Create `REPORT_QUEUE` under `config/secrets/<env>/` with the created queue's name (or just setting the environment variable `REPORT_QUEUE`).
 
-### Set up Slack Webhook URL
+#### Set up Slack Webhook URL
 1. Follow this [tutorial](https://api.slack.com/messaging/webhooks) to create a Slack App and get your Webhook URL.
 2. Create `SLACK_WEBHOOK_URL` under `config/secrets/<env>/` with the webhook url (or just setting the environment variable `SLACK_WEBHOOK_URL`).
 
 ## Run with Docker
-Use either of the following ways to build image and run container with all the credentials.
-* Put all credentials under `config/secrets/prod/` directory. Then use the following command to build image and run container at the base of the project directory.
-    ```bash
-    docker compose run --rm worker
-    ```
-* Pass all credentials directly with the following command.
-    ```bash
-    docker compose run --rm \
-        -e AWS_ACCESS_KEY_ID=<aws credentials> \
-        -e AWS_SECRET_ACCESS_KEY=<aws credentials> \
-        -e AWS_REGION=<aws credentials> \
-        -e REPORT_QUEUE=<aws sqs queue> \
-        -e SLACK_WEBHOOK_URL=<slack webhook url> \
-        worker
-    ```
-    or
-    ```bash
-    export AWS_ACCESS_KEY_ID=<aws credentials>
-    export AWS_SECRET_ACCESS_KEY=<aws credentials>
-    export AWS_REGION=<aws credentials>
-    export REPORT_QUEUE=<aws sqs queue>
-    export SLACK_WEBHOOK_URL=<slack webhook url>
-    docker compose run --rm worker
-    ```
+You can use the notifier easily with Docker Compose.\
+Before that, make sure you have all the configurations set up as mentioned above.
 
-## CLI usage
-Here we use [invoke](https://docs.pyinvoke.org/) as our task management tool
+For convenience, you can use a `.env` file with all the necessary variables configured as follows:
 
-```bash
+```shell
+export AWS_ACCESS_KEY_ID=<aws credentials>
+export AWS_SECRET_ACCESS_KEY=<aws credentials>
+export AWS_REGION=<aws credentials>
+export CLONE_QUEUE=<aws sqs queue>
+export SLACK_WEBHOOK_URL=<slack webhook url>
+```
+
+Then `source` the configuration file:
+
+```shell
+source .env
+```
+
+Notice that it is not recommended to `export` all these credentials directly in the shell since these will be logged into shell history if not inserted through secure input.\
+Don't do that especially when you're using a shared device that might be accessed by multiple users.
+
+### Example usage
+
+```shell
+docker compose run --rm worker  # send daily clone reports based on development configurations
+ENV=production docker compose run --rm worker  # send daily clone reports based on production configurations
+docker compose run --rm console  # run console
+```
+
+After execution, the clone report will be sent to your Slack channel.
+
+
+## Invoke tasks
+Here we use [invoke](https://docs.pyinvoke.org/) as our task management tool.
+
+You can use the container's bash to test these commands.
+```shell
+docker compose run --rm bash
+```
+
+### Commands
+```shell
 inv -l  # show all tasks
 inv [task] -h  # show task help message
 inv console -e [env]  # run application console (ipython)
@@ -67,8 +92,4 @@ inv quality.all  # run all quality tasks (style + metric)
 inv quality.reformat  # reformat your code using isort and the black coding style
 inv quality.typecheck  # check type with mypy
 inv quality  # same as `inv quality.all`
-inv docker.build  # build Docker image for production usage
-inv docker.run -e [environs] -c [cmd]  # run the local Docker container as a worker
-inv docker.rm  # remove exited containers
-inv docker.ps  # list all containers, running and exited
 ```
