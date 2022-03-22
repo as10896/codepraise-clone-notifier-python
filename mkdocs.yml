@@ -1,0 +1,18 @@
+site_name: CodePraise Python Clone Notifier
+repo_name: codepraise-clone-notifier-python
+repo_url: https://github.com/as10896/codepraise-clone-notifier-python
+theme:
+  name: material
+  palette:
+    primary: deep purple
+  features:
+    - search.suggest
+    - search.highlight
+markdown_extensions:
+  - toc:
+      permalink: true
+nav:
+  - Introduction: index.md
+  - prerequisite.md
+  - docker.md
+  - invoke.md
