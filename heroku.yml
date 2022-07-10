@@ -7,7 +7,9 @@ build:
     # When deploying with Docker, you must use `web` image instead of `worker` to use Heroku Scheduler
     # even if it's only used to execute one-off tasks.
     # Ref: https://devcenter.heroku.com/articles/scheduler#heroku-scheduler-and-container-registry
-    web: Dockerfile
+    web:
+      dockerfile: Dockerfile
+      target: base
 run:
   # Here we don't use `web: inv worker -e production` to set up the command to be executed by Heroku Scheduler.
   # The scheduled job `inv worker -e production` is a one-off task and will exit the process with status 0 

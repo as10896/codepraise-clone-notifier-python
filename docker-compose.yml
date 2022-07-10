@@ -1,10 +1,9 @@
 x-app: &default-app
   build:
-    args:
-      - INSTALL_DEV=${INSTALL_DEV:-false}
-  image: codepraise-clone-notifier-python
+    target: debug
+  image: codepraise-clone-notifier-python:debug
   volumes:
-    - ./config/secrets:/worker/config/secrets
+    - .:/worker
   environment:
     - AWS_ACCESS_KEY_ID
     - AWS_SECRET_ACCESS_KEY
@@ -21,10 +20,6 @@ services:
   # `$ docker compose run --rm console`
   console:
     <<: *default-app
-    build:
-      args:
-        - INSTALL_DEV=true
-    image: codepraise-clone-notifier-python:debug
     profiles:
       - debug
     command: inv console -e ${ENV:-development}
@@ -32,10 +27,6 @@ services:
   # `$ docker compose run --rm bash`
   bash:
     <<: *default-app
-    build:
-      args:
-        - INSTALL_DEV=true
-    image: codepraise-clone-notifier-python:debug
     tty: true
     profiles:
       - debug
