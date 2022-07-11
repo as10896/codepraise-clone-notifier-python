@@ -12,7 +12,7 @@ build:
       target: base
 run:
   # Here we don't use `web: inv worker -e production` to set up the command to be executed by Heroku Scheduler.
-  # The scheduled job `inv worker -e production` is a one-off task and will exit the process with status 0 
+  # The scheduled job `inv worker -e production` is a one-off task and will exit the process with status 0
   # right after execution. This will result in an infinite loop of application restart and crash.
   # Instead, we use a process running forever to avoid application repeating Starting/Crashed over and over.
   # Notice that you have to bind this process with Heroku-assigned $PORT, otherwise it'll raise Boot timeout error.

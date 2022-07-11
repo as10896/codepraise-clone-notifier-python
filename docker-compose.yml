@@ -16,7 +16,7 @@ services:
   worker:
     <<: *default-app
     command: inv worker -e ${ENV:-development}
-  
+
   # `$ docker compose run --rm console`
   console:
     <<: *default-app
